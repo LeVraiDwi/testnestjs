@@ -1,0 +1,57 @@
+version: "3.7"
+
+services:
+  # react:
+  #   container_name: react
+  #   build:
+  #     context: ./front
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - "./front/react/src:/app/src"
+  #   ports:
+  #     - 3001:3000
+  #   environment:
+  #     - CHOKIDAR_USEPOLLING=true
+
+  nest:
+    container_name: nest
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    volumes:
+      - "./back/nest/src:/nest/src"
+      - "./back/nest/prisma:/nest/prisma"
+    ports:
+      - 8080:8080
+
+  postgres:
+    container_name: postgresql
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    volumes:
+      - "database:/var/lib/postgresql/data"
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    restart: always
+
+  # pgadmin:
+  #   container_name: pgAdmin
+  #   build:
+  #     context: ./pgadmin
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 5050:80
+  #   environment:
+  #     - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+  #     - PGADMIN_DEFAULT_PASSWORD=admin
+
+volumes:
+  database:
+    driver: local
